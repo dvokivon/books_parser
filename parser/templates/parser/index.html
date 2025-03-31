@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парсер книг</title>
+</head>
+<body>
+    <h1>Парсер книг</h1>
+
+    <form action="{% url 'run_parser' %}" method="get">
+        <label for="category">Выберите категорию:</label>
+        <select name="category" id="category">
+            {% for name, url in categories.items %}
+                <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+    </form><br/>
+    <button type="submit">Запустить парсер</button>
+
+    <h2>Книги в базе:</h2>
+    <ul>
+        {% for book in books %}
+            <li>{{ book.title }} - £{{ book.price }} ({{ book.availability|yesno:"В наличии,Нет в наличии" }})</li>
+        {% empty %}
+            <li>Нет данных</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
