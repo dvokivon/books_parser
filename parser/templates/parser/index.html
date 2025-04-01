@@ -6,25 +6,74 @@
     <title>Парсер книг</title>
 </head>
 <body>
-    <h1>Парсер книг</h1>
+    {% block content %}
+    <h2>Книжный парсер</h2>
 
-    <form action="{% url 'run_parser' %}" method="get">
-        <label for="category">Выберите категорию:</label>
-        <select name="category" id="category">
-            {% for name, url in categories.items %}
-                <option value="{{ name }}">{{ name }}</option>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
             {% endfor %}
-        </select>
-    </form><br/>
-    <button type="submit">Запустить парсер</button>
+        </ul>
+    {% endif %}
 
-    <h2>Книги в базе:</h2>
-    <ul>
-        {% for book in books %}
-            <li>{{ book.title }} - £{{ book.price }} ({{ book.availability|yesno:"В наличии,Нет в наличии" }})</li>
-        {% empty %}
-            <li>Нет данных</li>
-        {% endfor %}
-    </ul>
+    <h3> Запуск парсера</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Запустить</button>
+    </form>
+
+    <hr>
+
+    <!-- Форма для поиска -->
+    <h3>Поиск книг</h3>
+    <form method="get" id="search-form">
+        <input type="text" name="query" placeholder="Название книги" value="{{ query }}">
+        <input type="number" name="price" placeholder="Макс. цена" value="{{ price }}">
+        <input type="number" name="rating" placeholder="Рейтинг (0-5)" value="{{ rating }}" min="0" max="5">
+        <button type="submit">Искать</button>
+        <button type="button" onclick="resetFilters()">Сбросить фильтры</button>
+
+        <script>
+            function resetFilters() {
+                let form = document.getElementById("search-form");
+                form.querySelector("input[name='query']").value = "";
+                form.querySelector("input[name='price']").value = "";
+                form.querySelector("input[name='rating']").value = "";
+                form.submit(); 
+            }
+        </script>
+    </form>
+
+    <hr>
+
+    <!-- Таблица книг -->
+    <h3>Найденные книги</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Цена (£)</th>
+                <th>В наличии</th>
+                <th>Рейтинг</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.price }}</td>
+                    <td>{% if book.availability %}✅{% else %}❌{% endif %}</td>
+                    <td>{{ book.rating|default:"-" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">Нет данных</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
 </body>
 </html>

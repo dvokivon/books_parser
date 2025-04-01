@@ -1,8 +1,4 @@
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import ParserForm
-from .models import Book
-from .utils import parse_books_from_category
+from django import forms
 
 CATEGORIES = {
     "Travel": "category/books/travel_2/index.html",
@@ -58,49 +54,7 @@ CATEGORIES = {
 }
 
 
-def index(request):
-    """Главная страница с парсером и поиском"""
-    if request.method == "POST":
-        form = ParserForm(request.POST)
-        if form.is_valid():
-            category = form.cleaned_data["category"]
-            if category == "All":
-                for url in CATEGORIES.values():
-                    if url != "all":
-                        parse_books_from_category(url)
-            else:
-                parse_books_from_category(CATEGORIES[category])
-
-            messages.success(
-                request,
-                f"Категория '{category}' успешно спарсена!"
-                )
-            return redirect("index")
-
-    else:
-        form = ParserForm()
-
-    query = request.GET.get("query", "")
-    price = request.GET.get("price", "")
-    rating = request.GET.get("rating", "")
-
-    books = Book.objects.all()
-
-    if query:
-        books = books.filter(title__icontains=query)
-
-    if price:
-        try:
-            books = books.filter(price__lte=float(price))
-        except ValueError:
-            pass
-
-    if rating:
-        try:
-            rating = int(rating)
-            if 0 <= rating <= 5:
-                books = books.filter(rating=rating)
-        except ValueError:
-            pass
-
-    return render(request, "parser/index.html", {"form": form, "books": books, "query": query, "price": price})
+class ParserForm(forms.Form):
+    category = forms.ChoiceField(
+        choices=[(key, key) for key in CATEGORIES.keys()],
+        label="Выберите категорию")

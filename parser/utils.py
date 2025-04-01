@@ -5,6 +5,7 @@ from .models import Book
 
 BASE_URL = "https://books.toscrape.com/catalogue/"
 
+
 def get_soup(url):
     """Получение HTML страницы"""
     print(f"Запрашиваем URL: {url}") 
@@ -12,6 +13,7 @@ def get_soup(url):
     if response.status_code != 200:
         raise Exception(f"Ошибка {response.status_code}: сайт недоступен")
     return BeautifulSoup(response.text, "html.parser")
+
 
 def parse_book_page(book_url):
     """Парсит страницу книги и извлекает данные"""
@@ -30,6 +32,7 @@ def parse_book_page(book_url):
         "availability": availability,
         "rating": rating
     }
+
 
 def rating_to_int(rating_str):
     """Конвертирует текстовый рейтинг в число"""
