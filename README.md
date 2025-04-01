@@ -27,7 +27,7 @@
 ### **1. Клонирование репозитория**
 
 ```sh
-git clone https://github.com/your_username/books_parser.git
+git clone https://github.com/dvokivon/books_parser.git
 cd books_parser
 ```
 ### **2. Запуск проекта в Docker**
