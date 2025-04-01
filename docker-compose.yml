@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: books_db
+      POSTGRES_USER: books_user
+      POSTGRES_PASSWORD: '130602'
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: django_app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://user:password@db:5433/books_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+volumes:
+  pgdata:
