@@ -12,7 +12,7 @@
 
 ---
 
-##**Стек технологий**
+## **Стек технологий**
 
 - **Backend**: Python 3.12, Django  
 - **Database**: PostgreSQL  
